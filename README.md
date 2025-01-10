@@ -5,7 +5,7 @@ cli music player (Coming Soon)
 ## Repository Structure
 
 ```bash
-music-player/
+ethos/
 ├── .editorconfig
 ├── .gitignore
 ├── .github/
@@ -15,7 +15,7 @@ music-player/
 │   ├── dockerfile
 │   ├── compose.yaml
 │   └── readme.md
-├── musicplayer/
+├── ethos/
 │   ├── __init__.py
 │   ├── main.py    # entry point of the application.
 │   ├── config.py  # Manages configuration settings.

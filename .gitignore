@@ -71,7 +71,7 @@ ipython_config.py
 celerybeat-schedule
 
 # dotenv
-ethos/.env
+.env
 .venv
 env/
 venv/
@@ -91,3 +91,6 @@ dmypy.json
 # Editor directories
 .vscode/
 .idea/
+
+
+.cache

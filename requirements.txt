@@ -1,0 +1,5 @@
+yt-dlp==2024.12.23
+python-vlc==3.0.21203
+
+# Development dependencies
+python-dotenv==1.0.1

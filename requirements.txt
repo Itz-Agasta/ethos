@@ -1,5 +1,8 @@
 yt-dlp==2024.12.23
 python-vlc==3.0.21203
+shazamio==0.7.0
+spotipy==2.25.0
 
 # Development dependencies
 python-dotenv==1.0.1
+pytest==8.3.4

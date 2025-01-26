@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from time import time
 import httpx
 from pathlib import Path
+from tools.helper import Format
+import json
 
 load_dotenv()
 
@@ -223,7 +225,6 @@ def fetch_recents() -> list[str]:
     return recents
 
 
-
 def add_track_to_recents(track: str):
     """Writes a track to the recents file, keeping only the last 10 entries."""
     recents_dir = Path.home() / ".ethos" / "userfiles"
@@ -252,3 +253,56 @@ def add_track_to_recents(track: str):
             file.writelines(lines)
     except Exception as e:
         return f"Error writing to recents file: {e}"
+
+
+def fetch_tracks_from_playlist(playlist_name: str) -> list[str]:
+        """
+        Function to fetch all songs from a playlist.json file.
+
+        Args:
+        - playlist_name (str): name of a playlist
+
+        Returns:
+        - list: List of all songs in a particular playlist
+        """
+        playlist_file = Path.home() / ".ethos" / "userfiles" / "playlists" / f"{playlist_name}.json"
+        tracks = []
+        try:
+            if os.path.exists(playlist_file):
+                with open(playlist_file, 'r') as playlist:
+                    tracks_json = json.load(playlist)
+                    for track in tracks_json:
+                        name = track["name"]
+                        artist = track["artist"]
+                        tracks.append(f"{name} by {artist}")
+        except:
+            pass
+            return 
+        return tracks
+
+
+def add_track_to_playlist(playlist_name: str, track_name: str) -> None:
+    """
+    Function to add tracks to a playlist
+    
+    Args:
+    - playlist_name (str): name of a playlist
+    """
+    playlist_dir = Path.home() / ".ethos" / "userfiles" / "playlists"
+    playlist_file = playlist_dir / f"{playlist_name}.json"
+
+    playlist_dir.mkdir(parents=True, exist_ok=True)
+    tracks = []
+    track, artist = Format.extract_song_and_artist(track_name)
+    tracks.append({"name": track, "artist": artist})
+    try:
+        if os.path.exists(playlist_file):
+            with open(playlist_file, 'r') as playlist:
+                tracks_json = json.load(playlist)
+                for track in tracks_json:
+                    tracks.append(track)
+
+        with open(playlist_file, 'w') as file:
+            json.dump(tracks, file, indent=4)
+    except:
+        pass

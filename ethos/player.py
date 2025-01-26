@@ -1,8 +1,7 @@
 import vlc
 from pathlib import Path
 from typing import Optional, List
-from .config import get_music_folder
-from typing import Literal
+from config import get_music_folder
 
 class MusicPlayer:
     """
@@ -75,6 +74,7 @@ class MusicPlayer:
         """Resume the paused playback"""
         if not self.is_playing:
             self.player.play()
+            self.is_playing = True
 
     def stop(self):
         """

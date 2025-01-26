@@ -2,13 +2,13 @@ from textual.widget import Widget
 from textual.reactive import reactive
 from rich.layout import Layout
 from rich.text import Text
+from rich.padding import Padding
 from rich.align import Align
 from rich.panel import Panel
 from rich.progress_bar import ProgressBar
 from typing import Optional
-from ethos.ui.utils import assets
-from ethos.ui.utils import square_drawer
-from ethos.tools import helper
+from ui.utils import assets, square_drawer
+from tools import helper
 from datetime import datetime
 
 
@@ -114,8 +114,10 @@ class RichLayout(Widget):
         )
         self.layout["song-metadata"].update(
                 Align.left(
-                    Text(f" {self.current_song}\n {self.current_artist}",
-                         style=f"bold {self.color}"),
+                    Padding(f"{self.current_song}\n{self.current_artist}",
+                            (1,1),
+                            style=f"bold {self.color}",
+                         ),
                          vertical="middle"
                 )
         )

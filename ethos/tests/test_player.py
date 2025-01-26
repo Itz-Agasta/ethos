@@ -1,5 +1,3 @@
-import pytest
-
 from ethos.utils import get_audio_url
 from ethos.config import get_music_folder
 from ethos.player import MusicPlayer
@@ -67,4 +65,38 @@ def test_online_player():
         player.stop()
     assert url
 
+def test_local_player_unsupportted_files():
+    print("\nTesting unsupported file types...")
+    #file formats that are expected to give error when attempting to play with vlc media player
+    unsupported_files = [
+        "test.txt",
+        "test.exe",
+        "test.zip",
+        "test.doc",
+        "test.pdf",
+        "test.jpg",
+        "test.png",
+    ]
+    #file formats that are expected to give no error when attempting to play with vlc media player
+    supported_files = [
+        "test.mp3",
+        "test.mp4",
+        "test.wav",
+        "test.m4a",
+        "test.ogg",
+        "test.flac",
+    ]
+    directory = f"./testing_files"
+    for file in unsupported_files:
+        playing_status = player.play(f"{directory}/{file}")
+        if not playing_status:
+            print(f"Playing failed for {file.split(".")[0]}")
+        assert not player.play(f"{get_music_folder()}/{file}")
 
+    for file in supported_files:
+        playing_status = player.play(f"{directory}/{file}")
+        if not playing_status:
+            print(f"Playing failed for {file.split(".")[0]}")
+        assert player.play(f"{get_music_folder()}/{file}")
+
+    assert player.stop()

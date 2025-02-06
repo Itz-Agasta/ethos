@@ -2,10 +2,10 @@ from textual.app import App, ComposeResult
 from textual.reactive import reactive
 from textual.widgets import Input
 from textual import work
-from ui.rich_layout import RichLayout
-from player import MusicPlayer, TrackInfo
-from tools import helper
-from utils import fetch_tracks_list, get_audio_url, fetch_recents, add_track_to_recents, fetch_tracks_from_playlist, add_track_to_playlist
+from ethos.ui.rich_layout import RichLayout
+from ethos.player import MusicPlayer, TrackInfo
+from ethos.tools import helper
+from ethos.utils import fetch_tracks_list, get_audio_url, fetch_recents, add_track_to_recents, fetch_tracks_from_playlist, add_track_to_playlist
 import random
 
 class TextualApp(App):

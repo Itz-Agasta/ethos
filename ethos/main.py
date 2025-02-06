@@ -4,10 +4,12 @@
 
 import os
 import sys
+from dotenv import load_dotenv
 sys.path.append(os.getcwd())
 
-from ui import ui
+from ethos.ui import ui
 
-if __name__ == "__main__":
+def main():
+    load_dotenv()
     ethos_ui = ui.UI()
     ethos_ui.draw_ui()

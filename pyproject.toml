@@ -38,3 +38,12 @@ testpaths = [
 python_files = [
     "test_*.py"
 ]
+
+[tool.setuptools]
+packages = { find = { where = ["."] } }
+
+[tool.setuptools.package-data]
+"ethos" = ["ethos/.env", "ethos/ui/styles.tcss"]
+
+[project.scripts]
+ethos = "ethos.main:main"

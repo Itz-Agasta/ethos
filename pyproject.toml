@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ethos"
+version = "0.1.0"
+description = "A cross-platform CLI audio playbacker delivering local and online music streaming with User's Spotify playlist integration."
+authors = [
+    {name = "Agasta", email = "rupam.golui@proton.me"},
+    {name = "techie-coder", email = "saswata.biswas20@gmail.com"},
+    {name = "ZotacMaster", email = "suchetan005@gmail.com"},
+    {name = "Saikat Mahara"},
+    {name = "Albin Mathew"},
+]
+dependencies = [
+    "yt-dlp==2025.01.15",
+    "python-vlc==3.0.21203",
+    "spotipy==2.25.0",
+    "textual==1.0.0",
+    "rich==13.9.4",
+    "python-dotenv==1.0.1",
+    "httpx>=0.28.1"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.4"
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "."
+]
+testpaths = [
+    "tests"
+]
+python_files = [
+    "test_*.py"
+]

@@ -1,7 +1,7 @@
 import vlc
 from pathlib import Path
 from typing import Optional, List
-from config import get_music_folder
+from ethos.config import get_music_folder
 
 class MusicPlayer:
     """
@@ -97,6 +97,50 @@ class MusicPlayer:
 
     def get_state(self) -> any:
         return self.player.get_state()           
+    
+    def skip_forward(self, seconds: int = 5):
+        """
+        Skip forward by a specified number of seconds.
+        
+        Args:
+        - seconds (int): Number of seconds to skip forward. Default is 5.
+        """
+        if not self.current_track:
+            return
+
+        current_time = self.player.get_time()
+        if current_time == -1:  # No media or error
+            return
+
+        new_time = current_time + seconds * 1000 
+
+        # Ensure ethos don't skip beyond the end of the track
+        media = self.player.get_media()
+        if media:
+            duration = media.get_duration()
+            if duration != -1:
+                new_time = min(new_time, duration)
+
+        self.player.set_time(new_time)
+
+    def skip_backward(self, seconds: int = 5):
+        """
+        Skip backward by a specified number of seconds.
+        
+        Args:
+        - seconds (int): Number of seconds to skip backward. Default is 5.
+        """
+        if not self.current_track:
+            return
+
+        current_time = self.player.get_time()
+        if current_time == -1:  # No media or error
+            return
+
+        new_time = current_time - seconds * 1000  
+        new_time = max(new_time, 0)  # Ensure time doesn't go negative
+
+        self.player.set_time(new_time) 
 
 
 class TrackInfo:

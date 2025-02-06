@@ -1,4 +1,4 @@
-yt-dlp==2025.01.15
+yt-dlp==2025.01.26
 python-vlc==3.0.21203
 spotipy==2.25.0
 textual==1.0.0

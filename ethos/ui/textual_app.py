@@ -153,6 +153,14 @@ class TextualApp(App):
                     layout_widget.update_dashboard("Please enter the no. of track you want to play", "")
                     pass
             
+            if event.value == "/recents":
+                try:
+                    self.recents = fetch_recents()
+                    layout_widget.update_dashboard(self.recents, "Recents :")
+                    self.update_input()
+                except:
+                    pass
+            
             if event.value == "/help":
                 try:
                     layout_widget.show_commands()
@@ -219,7 +227,7 @@ class TextualApp(App):
         except:
             pass
 
-        if self.current_track_duration == TrackInfo.get_current_time(self.player):
+        if self.current_track_duration >= TrackInfo.get_current_time(self.player):
             if self.queue:
                 try:
                     keys = list(self.queue.keys())
@@ -228,6 +236,9 @@ class TextualApp(App):
                     track = tracks[0]
                     del self.queue[key]
                     self.handle_play(track)
+                    entries = self.queue.values()
+                    data = "\n".join(f"{i+1}. {track}" for i, track in enumerate(entries))
+                    layout_widget.update_dashboard(data, "Current Queue :-")
                     layout_widget.update_log("Currently playing from queue")
                 except:
                     pass

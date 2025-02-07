@@ -44,15 +44,21 @@ class Format:
         
         command_type, value = parts
     
-        if command_type == '/play' or command_type == '/queue-add' or command_type == '/queue-remove':
+        if command_type == '/play' or command_type == '/queue-add' or command_type == '/queue-remove' or command_type == "/vp":
             return value
         elif command_type == '/volume' or command_type == '/qp':
             try:
                 return int(value)
             except ValueError:
                 raise ValueError("Volume must be a number")
-        else:
-            raise ValueError("Unknown command")
+        elif command_type == '/ap':
+            try:
+                parts = value.split(maxsplit=1)
+                playlist_name, track_name = parts
+                return playlist_name, track_name
+            except:
+                pass
+        
         
     
     @staticmethod

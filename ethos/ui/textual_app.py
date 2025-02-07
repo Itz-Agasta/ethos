@@ -5,7 +5,7 @@ from textual import work
 from ui.rich_layout import RichLayout
 from player import MusicPlayer, TrackInfo
 from tools import helper
-from utils import fetch_tracks_list, get_audio_url, fetch_recents, add_track_to_recents, fetch_tracks_from_playlist, add_track_to_playlist
+from utils import Search, UserFiles
 import random
 
 class TextualApp(App):
@@ -36,6 +36,7 @@ class TextualApp(App):
     recents = reactive([])
     current_track_duration = reactive("")
     show_playlists = reactive(False)
+    layout_widget = ""
 
     def compose(self) -> ComposeResult:
         """Composer function for textual app"""
@@ -48,14 +49,15 @@ class TextualApp(App):
         """Handle functions after mounting the app"""
 
         self.input = reactive("")
-        self.recents = fetch_recents()
-        layout_widget = self.query_one(RichLayout)
+        self.recents = UserFiles.fetch_recents()
+        self.layout_widget = self.query_one(RichLayout)
+
         try:
             if self.recents:
-                layout_widget.update_dashboard(self.recents, "Recents :-")
+                self.layout_widget.update_dashboard(self.recents, "Recents :-")
             else:
-                layout_widget.update_dashboard("You have not played any tracks yet!", "")
-            self.set_interval(1, self.update_track_progress)
+                self.layout_widget.update_dashboard("You have not played any tracks yet!", "")
+            self.set_interval(1, self.update_)
         except:
             pass
 
@@ -64,20 +66,20 @@ class TextualApp(App):
         """Handle input submission"""
 
         self.input = event.value
-        layout_widget = self.query_one(RichLayout)
+        
         
         if event.value:
             if event.value.startswith("/play"):
                 try:
                     search_track = self.helper.parse_command(event.value)
-                    layout_widget.update_log("Searching for tracks")
-                    self.tracks_list = await fetch_tracks_list(search_track)
+                    self.layout_widget.update_log("Searching for tracks")
+                    self.tracks_list = await Search.fetch_tracks_list(search_track)
                     if self.tracks_list:
-                        layout_widget.update_dashboard(self.tracks_list, "Type track no. to be played :-")
+                        self.layout_widget.update_dashboard(self.tracks_list, "Type track no. to be played :-")
                         self.update_input()
                         self.select_from_queue = False
                 except ValueError:
-                    layout_widget.update_dashboard("Invalid command. Make sure to enter a valid command. You can see the list of commands using /help", "")
+                    self.layout_widget.update_dashboard("Invalid command. Make sure to enter a valid command. You can see the list of commands using /help", "")
                     pass
                     
 
@@ -86,7 +88,7 @@ class TextualApp(App):
                     self.should_play_queue = False
                     self.track_to_play = self.tracks_list[int(event.value)-1]
                     self.handle_play(self.track_to_play)
-                    layout_widget.update_log("Playing track from search")
+                    self.layout_widget.update_log("Playing track from search")
                     self.update_input()
                 except:
                     pass
@@ -96,21 +98,21 @@ class TextualApp(App):
                     volume_to_be_set = self.helper.parse_command(event.value)
                     self.player.set_volume(volume_to_be_set)
                     self.update_input()
-                    layout_widget.update_volume(volume_to_be_set)
+                    self.layout_widget.update_volume(volume_to_be_set)
                 except ValueError:
-                    layout_widget.update_dashboard("Please enter the volume in digits.", "")
+                    self.layout_widget.update_dashboard("Please enter the volume in digits.", "")
                     pass
             
             if event.value.startswith("/queue-add"):
                 try:
                     self.search_track = self.helper.parse_command(event.value)
-                    self.queue_options = await fetch_tracks_list(self.search_track)
+                    self.queue_options = await Search.fetch_tracks_list(self.search_track)
                     if self.queue_options:
-                        layout_widget.update_dashboard(self.queue_options, "Type track no. to be added to queue :-")
+                        self.layout_widget.update_dashboard(self.queue_options, "Type track no. to be added to queue :-")
                         self.update_input()
                         self.select_from_queue = True
                 except ValueError:
-                    layout_widget.update_dashboard("Please enter a valid track name. You can view the list of commands using /help", "")
+                    self.layout_widget.update_dashboard("Please enter a valid track name. You can view the list of commands using /help", "")
                     pass
 
             if event.value.isdigit() and self.select_from_queue:
@@ -127,7 +129,7 @@ class TextualApp(App):
                 try:
                     tracks = self.queue.values()
                     data = "\n".join(f"{i+1}. {track}" for i, track in enumerate(tracks))
-                    layout_widget.update_dashboard(data, "Current Queue :-")
+                    self.layout_widget.update_dashboard(data, "Current Queue :-")
                     self.update_input()
                 except:
                     pass
@@ -147,71 +149,103 @@ class TextualApp(App):
                     track = queue[ind-1]
                     del self.queue[key]
                     self.handle_play(track)
-                    layout_widget.update_log("Playing track from current queue")
+                    self.layout_widget.update_log("Playing track from current queue")
                     self.update_input()
                 except ValueError:
-                    layout_widget.update_dashboard("Please enter the no. of track you want to play", "")
+                    self.layout_widget.update_dashboard("Please enter the no. of track you want to play", "")
                     pass
             
             if event.value == "/recents":
                 try:
-                    self.recents = fetch_recents()
-                    layout_widget.update_dashboard(self.recents, "Recents :")
+                    self.recents = UserFiles.fetch_recents()
+                    self.layout_widget.update_dashboard(self.recents, "Recents :")
                     self.update_input()
                 except:
                     pass
-            
+
+            if event.value == "/sp" or event.value == "/show-playlists":
+                self.show_playlists()
+
+            if event.value.startswith("/ap"):
+                playlist_name, track_name = self.helper.parse_command(event.value)
+                self.add_to_playlist(track_name, playlist_name)
+
+            if event.value.startswith("/vp"):
+                playlist_name = self.helper.parse_command(event.value)
+                self.show_tracks_from_playlist(playlist_name)
+
+    
             if event.value == "/help":
                 try:
-                    layout_widget.show_commands()
+                    self.layout_widget.show_commands()
                 except:
                     pass
             
 
     def action_pause(self):
         """Pause the player"""
-        layout_widget = self.query_one(RichLayout)
         self.player.pause()
-        layout_widget.update_playing_status()
+        self.layout_widget.update_playing_status()
 
 
     def action_resume(self):
         """Resume the player"""
-        layout_widget = self.query_one(RichLayout)
+        
         if not self.player.is_playing:
             self.player.resume()
-            layout_widget.update_playing_status()
+            self.layout_widget.update_playing_status()
 
     def action_volume_up(self):
         """Increase the volume by 5 levels"""
         current_volume = self.player.get_volume()
         self.player.set_volume(current_volume+5)
-        layout_widget = self.query_one(RichLayout)
-        layout_widget.update_volume(self.player.get_volume())
+        self.layout_widget.update_volume(self.player.get_volume())
 
     def action_volume_down(self):
         """Decrease the volume by 5 levels"""
         current_volume = self.player.get_volume()
         self.player.set_volume(current_volume-5)
-        layout_widget = self.query_one(RichLayout)
-        layout_widget.update_volume(self.player.get_volume())
+        self.layout_widget.update_volume(self.player.get_volume())
 
     def handle_play(self, track_name: str):
         """Function to handle the track playback"""
-        layout_widget = self.query_one(RichLayout)
         try:
-            url = get_audio_url(track_name+" official audio")
+            url = Search.get_audio_url(track_name+" official music video")
             self.track_url = url
             self.player.set_volume(50)
             self.player.play(url)
-            add_track_to_recents(helper.Format.clean_hashtag(track_name))
-            layout_widget.update_track(track_name)
+            UserFiles.add_track_to_recents(helper.Format.clean_hashtag(track_name))
+            self.layout_widget.update_track(track_name)
             self.current_track_duration = TrackInfo.get_audio_duration(url)
-            layout_widget.update_total_track_time(TrackInfo.get_audio_duration(url))
+            self.layout_widget.update_total_track_time(TrackInfo.get_audio_duration(url))
             color_ind = random.randint(0,9)
-            layout_widget.update_color(color_ind)
+            self.layout_widget.update_color(color_ind)
         except:
             pass
+    
+    def show_playlists(self) -> None:
+        try:
+            playlists = UserFiles.fetch_playlists()
+            data = "\n".join(playlists) if playlists else ""
+            self.layout_widget.update_dashboard(data, "Your playlists")
+        except:
+            pass
+
+    def show_tracks_from_playlist(self, playslist: str) -> None:
+        try:
+            playlist = UserFiles.fetch_tracks_from_playlist(playlist)
+            data = "\n".join(f"{i+1}. {track}" for i, track in enumerate(playlist))
+            self.layout_widget.update_dashboard(data, "Playlist Contents :")
+        except:
+            pass
+
+    def add_to_playlist(self, track, playlist: str) -> None:
+        try:
+            UserFiles.add_track_to_playlist(track, playlist)
+            self.layout_widget.update_log("Track added to playlist")
+        except:
+            pass
+            
 
     def update_input(self) -> None:
         """Function to reset the data in input widget once user enters his input"""
@@ -219,15 +253,15 @@ class TextualApp(App):
         input_widget.placeholder = ""
         input_widget.value = ""
     
-    def update_track_progress(self) -> None:
-        """Function to update track progress"""
-        layout_widget = self.query_one(RichLayout)
+    def update_(self) -> None:
+        """Function to update track progress and check for queue"""
+        
         try:   
-            layout_widget.update_music_progress(TrackInfo.get_current_time(self.player), int(TrackInfo.get_progress(self.player)))
+            self.layout_widget.update_music_progress(TrackInfo.get_current_time(self.player), int(TrackInfo.get_progress(self.player)))
         except:
             pass
 
-        if self.current_track_duration >= TrackInfo.get_current_time(self.player):
+        if TrackInfo.get_progress(self.player) == 100.0:
             if self.queue:
                 try:
                     keys = list(self.queue.keys())
@@ -238,8 +272,8 @@ class TextualApp(App):
                     self.handle_play(track)
                     entries = self.queue.values()
                     data = "\n".join(f"{i+1}. {track}" for i, track in enumerate(entries))
-                    layout_widget.update_dashboard(data, "Current Queue :-")
-                    layout_widget.update_log("Currently playing from queue")
+                    self.layout_widget.update_dashboard(data, "Current Queue :-")
+                    self.layout_widget.update_log("Currently playing from queue")
                 except:
                     pass
 

@@ -1,7 +1,7 @@
 import vlc
 from pathlib import Path
 from typing import Optional, List
-from config import get_music_folder
+from ethos.config import get_music_folder
 
 class MusicPlayer:
     """

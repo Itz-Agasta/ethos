@@ -74,7 +74,9 @@ docs/_build/
 
 #extra
 .cache
+
 .DS_Store
+private/
 
 #shell-script
 ./run_ui.sh

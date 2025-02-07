@@ -98,8 +98,8 @@ class SpotifyImporter:
 ## Temporary test ##
 ###################
 if __name__ == "__main__":
-    client_id = os.getenv("SPOTIPY_CLIENT_ID")
-    client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")
+    client_id = os.getenv("SPOTIFY_CLIENT_ID")
+    client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
     redirect_uri = os.getenv("REDIRECT_URI") or "http://localhost:3000/"
 
     importer = SpotifyImporter(client_id, client_secret, redirect_uri)
@@ -115,4 +115,4 @@ if __name__ == "__main__":
 
     print(f"Playlist '{selected_playlist['name']}' has been saved.")
     
-    importer.refresh_all_playlists() # Refresh all playlists
+    # importer.refresh_all_playlists() # Refresh all playlists

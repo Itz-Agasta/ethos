@@ -132,7 +132,7 @@ async def fetch_tracks_list(track_name: str) -> list:
         return fetched_tracks
     
 
-async def search_artist_id_from_spotify(artist_name, token):
+async def search_artist_id_from_spotify(artist_name, token): #endless-playback
     """Search for an artist on Spotify and return their ID."""
     url = f"https://api.spotify.com/v1/search?q={artist_name}&type=artist&limit=1"
     headers = {"Authorization": f"Bearer {token}"}
@@ -150,7 +150,7 @@ async def search_artist_id_from_spotify(artist_name, token):
 
     
 
-async def search_song_id_from_spotify(song_name, token):
+async def search_song_id_from_spotify(song_name, token): #endless   playback
     """Search for a song on Spotify."""
     url = f"https://api.spotify.com/v1/search?q={song_name}&type=track&limit=1"
     headers = {"Authorization": f"Bearer {token}"}
@@ -209,7 +209,7 @@ async def get_track_image(song_id, token):
         else:
             raise Exception(f"Failed to get track data: {response_data}")
     
-
+# move to config.py
 def fetch_recents() -> list[str]:
     """Fetches the recent tracks and returns it in a list"""
 

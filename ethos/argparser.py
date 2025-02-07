@@ -1,7 +1,7 @@
 import argparse
-from utils import get_audio_url, fetch_tracks_list
-from player import MusicPlayer, TrackInfo
-from tools import helper
+from ethos.utils import get_audio_url, fetch_tracks_list
+from ethos.player import MusicPlayer, TrackInfo
+from ethos.tools import helper
 from rich.console import Console
 import asyncio
 import time

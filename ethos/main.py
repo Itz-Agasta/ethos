@@ -1,8 +1,7 @@
 
-"""
-Entry point of the application
-"""
-
+########################
+# Entry point of Ethos #
+########################
 
 import os
 import sys

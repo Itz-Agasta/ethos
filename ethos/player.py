@@ -22,8 +22,8 @@ class MusicPlayer:
                 self.no_audio = True
                 self.vlc_instance = None
                 self.player = None
-            else:
-                self.vlc_instance = None
+        else:
+            self.vlc_instance = None
             self.player = None
         self.current_track = None
         self.is_playing = False

@@ -55,6 +55,10 @@ class Format:
             try:
                 parts2 = value.split(maxsplit=1)
                 playlist_name, track_name = parts2
+
+                parts = value.split(maxsplit=1)
+                playlist_name, track_name = parts
+
                 return playlist_name, track_name
             except:
                 pass

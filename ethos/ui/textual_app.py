@@ -191,7 +191,27 @@ class TextualApp(App):
                 playlist_name = self.helper.parse_command(event.value)
                 self.show_tracks_from_playlist(playlist_name)
                 self.update_input()
+            
+            if event.value == "/recents":
+                try:
+                    self.recents = UserFiles.fetch_recents()
+                    self.layout_widget.update_dashboard(self.recents, "Recents :")
+                    self.update_input()
+                except:
+                    pass
 
+            if event.value == "/sp" or event.value == "/show-playlists":
+                self.show_playlists()
+
+            if event.value.startswith("/ap"):
+                playlist_name, track_name = self.helper.parse_command(event.value)
+                self.add_to_playlist(track_name, playlist_name)
+
+            if event.value.startswith("/vp"):
+                playlist_name = self.helper.parse_command(event.value)
+                self.show_tracks_from_playlist(playlist_name)
+
+    
             if event.value == "/help":
                 try:
                     self.layout_widget.show_commands()
@@ -255,6 +275,16 @@ class TextualApp(App):
             self.layout_widget.update_dashboard(data, "Playlist Contents :")
         except:
             pass
+
+
+    def show_tracks_from_playlist(self, playlist: str) -> None:
+        try:
+            playlist = UserFiles.fetch_tracks_from_playlist(playlist)
+            data = "\n".join(f"{i+1}. {track}" for i, track in enumerate(playlist))
+            self.layout_widget.update_dashboard(data, "Playlist Contents :")
+        except:
+            pass
+
 
     def add_to_playlist(self, track, playlist: str) -> None:
         try:

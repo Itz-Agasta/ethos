@@ -55,6 +55,9 @@ class ConfigManager:
 
         :return: A Path object representing the music folder if found, otherwise None.
         """
+        if "SSH_CLIENT" in os.environ or "DISPLAY" not in os.environ:
+            return None
+            
         music_folder = self.get_music_folder_from_env() 
         if music_folder:
             return music_folder

@@ -1,3 +1,4 @@
+import os 
 import vlc
 from pathlib import Path
 from typing import Optional, List
@@ -12,12 +13,23 @@ class MusicPlayer:
     It integrates with the VLC media player for handling playback.
     """
     def __init__(self):
-        self.vlc_instance = vlc.Instance()
-        self.player = self.vlc_instance.media_player_new()
-        self.current_track: Optional[str] = None
+        self.no_audio = os.environ.get("ETHOS_NO_AUDIO") == "1"
+        if not self.no_audio:
+            try:
+                self.vlc_instance = vlc.Instance()
+                self.player = self.vlc_instance.media_player_new()
+            except:
+                self.no_audio = True
+                self.vlc_instance = None
+                self.player = None
+            else:
+                self.vlc_instance = None
+            self.player = None
+        self.current_track = None
         self.is_playing = False
-        self.library_path: Optional[Path] = get_music_folder()
+        self.library_path = None  # Don't call get_music_folder() here
         self.queue = None
+
         
     def set_library(self, path: str) -> bool:
         """Set and validate the music library path"""

@@ -7,8 +7,8 @@ from rich.align import Align
 from rich.panel import Panel
 from rich.progress_bar import ProgressBar
 from typing import Optional
-from ui.utils import assets, square_drawer
-from tools import helper
+from ethos.ui.utils import assets, square_drawer
+from ethos.tools import helper
 from datetime import datetime
 
 

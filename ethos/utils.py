@@ -5,7 +5,7 @@ from dotenv import load_dotenv, find_dotenv
 from time import time
 import httpx
 from pathlib import Path
-from tools.helper import Format
+from ethos.tools.helper import Format
 import json
 
 load_dotenv(dotenv_path=find_dotenv(filename=".env"))

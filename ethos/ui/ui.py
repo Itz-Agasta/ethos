@@ -1,4 +1,4 @@
-from .textual_app import TextualApp
+from ethos.ui.textual_app import TextualApp
 
 class UI:
     """UI class for drawing the ethos UI"""

@@ -37,6 +37,9 @@ class TextualApp(App):
     current_track_duration = reactive("")
     show_playlists = reactive(False)
     layout_widget = ""
+    current_playlist = reactive("")
+    add_playlist = reactive(False)
+
 
     def compose(self) -> ComposeResult:
         """Composer function for textual app"""
@@ -83,7 +86,7 @@ class TextualApp(App):
                     pass
                     
 
-            if event.value.isdigit() and not self.select_from_queue:
+            if event.value.isdigit() and not self.select_from_queue and not self.add_playlist:
                 try:
                     self.should_play_queue = False
                     self.track_to_play = self.tracks_list[int(event.value)-1]
@@ -115,7 +118,7 @@ class TextualApp(App):
                     self.layout_widget.update_dashboard("Please enter a valid track name. You can view the list of commands using /help", "")
                     pass
 
-            if event.value.isdigit() and self.select_from_queue:
+            if event.value.isdigit() and self.select_from_queue and not self.add_playlist:
                 try:
                     self.should_play_queue = True
                     self.track_to_be_added_to_queue = self.queue_options[int(event.value)-1]
@@ -167,14 +170,28 @@ class TextualApp(App):
                 self.show_playlists()
 
             if event.value.startswith("/ap"):
-                playlist_name, track_name = self.helper.parse_command(event.value)
-                self.add_to_playlist(track_name, playlist_name)
-
+                try:
+                    self.current_playlist, track_name = self.helper.parse_command(event.value)
+                    self.tracks_list = await Search.fetch_tracks_list(track_name)
+                    self.layout_widget.update_dashboard(self.tracks_list, f"Enter track number to be added to {self.current_playlist}")
+                    self.add_playlist = True
+                    self.update_input()
+                except:
+                    pass
+            
+            if event.value.isdigit() and self.add_playlist:
+                try:
+                    track_name = self.tracks_list[event.value - 1]
+                    UserFiles.add_track_to_playlist(self.current_playlist, track_name)
+                    self.update_input()
+                except:
+                    pass
+            
             if event.value.startswith("/vp"):
                 playlist_name = self.helper.parse_command(event.value)
                 self.show_tracks_from_playlist(playlist_name)
+                self.update_input()
 
-    
             if event.value == "/help":
                 try:
                     self.layout_widget.show_commands()
@@ -276,6 +293,3 @@ class TextualApp(App):
                     self.layout_widget.update_log("Currently playing from queue")
                 except:
                     pass
-
-  
-    

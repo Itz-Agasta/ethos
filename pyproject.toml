@@ -1,43 +1,65 @@
-[build-system]
-requires = ["setuptools>=45", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "ethos"
+[tool.poetry]
+name = "ethos-cli"
 version = "0.1.0"
-description = "A cross-platform CLI audio playbacker delivering local and online music streaming with User's Spotify playlist integration."
+description = "A cross-platform CLI music player delivering local and online music streaming with User's Spotify playlist integration."
 authors = [
-    {name = "Agasta", email = "rupam.golui@proton.me"},
-    {name = "techie-coder", email = "saswata.biswas20@gmail.com"},
-    {name = "ZotacMaster", email = "suchetan005@gmail.com"},
-    {name = "Saikat Mahara"},
-    {name = "Albin Mathew"},
+    "Agasta <rupam.golui@proton.me>",
+    "techie-coder <saswata.biswas20@gmail.com>",
+    "ZotacMaster <suchetan005@gmail.com>"
 ]
-dependencies = [
-    "yt-dlp==2025.01.26",
-    "python-vlc==3.0.21203",
-    "spotipy==2.25.0",
-    "textual==1.0.0",
-    "rich==13.9.4",
-    "python-dotenv==1.0.1",
-    "httpx>=0.28.1"
+maintainers = ["Agasta <rupam.golui@proton.me>"]
+readme = "README.md"
+license = 'MIT'
+
+keywords = ["ethos", "cli-music-player", "spotify", "vlc", "yt-dlp", "audio-player"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Multimedia :: Sound/Audio :: Players"
 ]
+packages = [
+    { include = "ethos", from = "." }
+]
+
+[tool.poetry.urls]
+homepage = "https://github.com/Itz-Agasta/ethos"
+repository = "https://github.com/Itz-Agasta/ethos"
+documentation = "https://github.com/Itz-Agasta/ethos/blob/master/README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0.0"
+python = ">=3.9,<4.0"
+yt-dlp = "2025.01.26"
+python-vlc = "3.0.21203"
+spotipy = "2.25.0"
+textual = "1.0.0"
+rich = "13.9.4"
+python-dotenv = "1.0.1"
+httpx = ">=0.28.1"
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=8.3.4"
-]
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^6.0.0"
+pytest-mock = "*"
 
 [tool.pytest.ini_options]
-pythonpath = [
-    "."
-]
-testpaths = [
-    "tests"
-]
-python_files = [
-    "test_*.py"
-]
+minversion = "6.0"
+addopts = "-ra -q --cov=ethos"
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["ethos"]
+omit = ["tests/*", "**/__init__.py"]
+
+[tool.poetry.scripts]
+ethos = "ethos.main:main"

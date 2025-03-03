@@ -54,6 +54,7 @@ class TextualApp(App):
         self.input = reactive("")
         self.recents = UserFiles.fetch_recents()
         self.layout_widget = self.query_one(RichLayout)
+        self.player.set_volume(self.volume)
 
         try:
             if self.recents:
@@ -138,10 +139,16 @@ class TextualApp(App):
                     pass
 
             if event.value.startswith("/pause"):
-                self.action_pause()
+                """To prevent ui bugs"""
+                if str(self.player.get_state()) == "State.Playing":
+                    self.action_pause()
+                self.update_input()
 
             if event.value.startswith("/resume"):
-                self.action_resume()
+                """To prevent ui bugs"""
+                if str(self.player.get_state()) == "State.Paused":
+                    self.action_resume()
+                self.update_input()
 
             if event.value.startswith("/qp"):
                 try:
@@ -211,7 +218,26 @@ class TextualApp(App):
                 playlist_name = self.helper.parse_command(event.value)
                 self.show_tracks_from_playlist(playlist_name)
 
-    
+            if event.value.startswith("/sf"):
+                try:
+                    interval = int(self.helper.parse_command(event.value))
+                    if interval:
+                        self.player.skip_forward(interval)
+                    else:
+                        self.player.skip_forward()
+                except:
+                    pass
+            
+            if event.value.startswith("/sb"):
+                try:
+                    interval = int(self.helper.parse_command(event.value))
+                    if interval:
+                        self.player.skip_backward(interval)
+                    else:
+                        self.player.skip_backward()
+                except:
+                    pass
+                
             if event.value == "/help":
                 try:
                     self.layout_widget.show_commands()
@@ -249,7 +275,6 @@ class TextualApp(App):
         try:
             url = Search.get_audio_url(track_name+" official music video")
             self.track_url = url
-            self.player.set_volume(50)
             self.player.play(url)
             UserFiles.add_track_to_recents(helper.Format.clean_hashtag(track_name))
             self.layout_widget.update_track(track_name)
@@ -305,10 +330,11 @@ class TextualApp(App):
         
         try:   
             self.layout_widget.update_music_progress(TrackInfo.get_current_time(self.player), int(TrackInfo.get_progress(self.player)))
+            #self.layout_widget.update_log(str(self.player.get_state()))
         except:
             pass
 
-        if TrackInfo.get_progress(self.player) == 100.0:
+        if str(self.player.get_state()) == "State.Ended":
             if self.queue:
                 try:
                     keys = list(self.queue.keys())

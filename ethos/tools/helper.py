@@ -39,14 +39,16 @@ class Format:
         """
         parts = command.split(maxsplit=1)
     
-        if len(parts) != 2:
+        if len(parts) != 2 and (command.startswith("/sf") or command.startswith("/sb")):
+            return 0
+        elif len(parts) != 2:
             raise ValueError("Invalid command format")
         
         command_type, value = parts
     
         if command_type == '/play' or command_type == '/queue-add' or command_type == '/queue-remove' or command_type == "/vp":
             return value
-        elif command_type == '/volume' or command_type == '/qp':
+        elif command_type == '/volume' or command_type == '/qp' or command_type == "/sf" or command_type == "/sb":
             try:
                 return int(value)
             except ValueError:
